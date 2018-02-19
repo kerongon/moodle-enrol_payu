@@ -23,7 +23,7 @@
  *   - use "su" if "sudo" not available
  *
  * @package    enrol_payu
- * @copyright  2012 Petr Skoda {@link http://skodak.org}
+ * @copyright  2018 Nilesh Pathade 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +33,7 @@ require(__DIR__.'/../../../config.php');
 require_once("$CFG->libdir/clilib.php");
 
 // Now get cli options.
-list($options, $unrecognized) = cli_get_params(array('verbose'=>false, 'help'=>false), array('v'=>'verbose', 'h'=>'help'));
+list($options, $unrecognized) = cli_get_params(array('verbose' => false, 'help' => false), array('v' => 'verbose', 'h' => 'help'));
 
 if ($unrecognized) {
     $unrecognized = implode("\n  ", $unrecognized);
@@ -41,9 +41,7 @@ if ($unrecognized) {
 }
 
 if ($options['help']) {
-    $help =
-        "Process payu expiration sync
-
+    $help = "Process payu expiration sync
 Options:
 -v, --verbose         Print verbose progress information
 -h, --help            Print out this help
@@ -67,7 +65,7 @@ if (empty($options['verbose'])) {
     $trace = new text_progress_trace();
 }
 
-/** @var $plugin enrol_paypal_plugin */
+// @var $plugin enrol_payu_plugin
 $plugin = enrol_get_plugin('payu');
 
 $result = $plugin->sync($trace);

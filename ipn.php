@@ -17,15 +17,9 @@
 /**
  * Listens for Instant Payment Notification from payu
  *
- * This script waits for Payment notification from payu,
- * then double checks that data by sending it back to payu.
- * If payu verifies this then it sets up the enrolment for that
- * user.
- *
  * @package    enrol_payu
- * @copyright 2010 Eugene Venter
- * @author     Eugene Venter - based on code by others
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2018 
+ * @author     Nilesh Pathade
  */
 
 // Disable moodle specific debug messages and any errors in output,
@@ -38,19 +32,19 @@ require_once($CFG->libdir.'/eventslib.php');
 require_once($CFG->libdir.'/enrollib.php');
 require_once($CFG->libdir . '/filelib.php');
 
-// payu does not like when we return error messages here,
-// the custom handler just logs exceptions and stops.
+// Payu does not like when we return error messages here,
+// The custom handler just logs exceptions and stops.
 set_exception_handler(\enrol_payu\util::get_exception_handler());
 
-/// Keep out casual intruders
+// Keep out casual intruders.
 if (empty($_POST) or !empty($_GET)) {
     print_error("Sorry, you can not use the script that way.");
 }
 
-/// Read all the data from payu and get it ready for later;
-/// we expect only valid UTF-8 encoding, it is the responsibility
-/// of user to set it up properly in payu business account,
-/// it is documented in docs wiki.
+// Read all the data from payu and get it ready for later;
+// We expect only valid UTF-8 encoding, it is the responsibility.
+// Of user to set it up properly in payu business account,
+// It is documented in docs wiki.
 
 $req = 'cmd=_notify-validate';
 
@@ -72,20 +66,20 @@ $data->timeupdated      = time();
 // Required for message_send.
 $PAGE->set_context(context_system::instance());
 
-/// get the user and course records
+// Get the user and course records.
 
-if (! $user = $DB->get_record("user", array("id"=>$data->userid))) {
-    \enrol_payu\util::message_paypal_error_to_admin("Not a valid user id", $data);
+if (! $user = $DB->get_record("user", array("id" => $data->userid))) {
+    \enrol_payu\util::message_payu_error_to_admin("Not a valid user id", $data);
     die;
 }
 
-if (! $course = $DB->get_record("course", array("id"=>$data->courseid))) {
-    \enrol_payu\util::message_paypal_error_to_admin("Not a valid course id", $data);
+if (! $course = $DB->get_record("course", array("id" => $data->courseid))) {
+    \enrol_payu\util::message_payu_error_to_admin("Not a valid course id", $data);
     die;
 }
 
 if (! $context = context_course::instance($course->id, IGNORE_MISSING)) {
-    \enrol_payu\util::message_paypal_error_to_admin("Not a valid context id", $data);
+    \enrol_payu\util::message_payu_error_to_admin("Not a valid context id", $data);
     die;
 }
 
@@ -94,55 +88,53 @@ if (! $context = context_course::instance($course->id, IGNORE_MISSING)) {
 // Required for message_send.
 $PAGE->set_context($context);
 
-if (! $plugin_instance = $DB->get_record("enrol", array("id"=>$data->instanceid, "status"=>0))) {
-    \enrol_payu\util::message_paypal_error_to_admin("Not a valid instance id", $data);
+if (! $plugininstance = $DB->get_record("enrol", array("id" => $data->instanceid, "status" => 0))) {
+    \enrol_payu\util::message_payu_error_to_admin("Not a valid instance id", $data);
     die;
 }
 
 $plugin = enrol_get_plugin('payu');
 
-/// Open a connection back to payu to validate the data
-$paypaladdr = empty($CFG->usepaypalsandbox) ? 'www.payu.com' : 'www.sandbox.payu.com';
+// Open a connection back to payu to validate the data.
+$payuaddr = empty($CFG->usepayusandbox) ? 'www.payu.com' : 'www.sandbox.payu.com';
 $c = new curl();
 $options = array(
     'returntransfer' => true,
-    'httpheader' => array('application/x-www-form-urlencoded', "Host: $paypaladdr"),
+    'httpheader' => array('application/x-www-form-urlencoded', "Host: $payuaddr"),
     'timeout' => 30,
     'CURLOPT_HTTP_VERSION' => CURL_HTTP_VERSION_1_1,
 );
-$location = "https://$paypaladdr/cgi-bin/webscr";
+$location = "https://$payuaddr/cgi-bin/webscr";
 $result = $c->post($location, $req, $options);
 
-if (!$result) {  /// Could not connect to payu - FAIL
+if (!$result) {  // Could not connect to payu - FAIL.
     echo "<p>Error: could not access payu.com</p>";
-    \enrol_payu\util::message_paypal_error_to_admin("Could not access payu.com to verify payment", $data);
+    \enrol_payu\util::message_payu_error_to_admin("Could not access payu.com to verify payment", $data);
     die;
 }
 
-/// Connection is OK, so now we post the data to validate it
+// Connection is OK, so now we post the data to validate it.
 
-/// Now read the response and check if everything is OK.
+// Now read the response and check if everything is OK.
 
 if (strlen($result) > 0) {
     if (strcmp($result, "VERIFIED") == 0) {          // VALID PAYMENT!
 
 
-        // check the payment_status and payment_reason
-
-        // If status is not completed or pending then unenrol the student if already enrolled
-        // and notify admin
+//  Check the payment_status and payment_reason.
+//  If status is not completed or pending then unenrol the student if already enrolled and notify admin.
 
         if ($data->payment_status != "Completed" and $data->payment_status != "Pending") {
-            $plugin->unenrol_user($plugin_instance, $data->userid);
-            \enrol_payu\util::message_paypal_error_to_admin("Status not completed or pending. User unenrolled from course",
+            $plugin->unenrol_user($plugininstance, $data->userid);
+            \enrol_payu\util::message_payu_error_to_admin("Status not completed or pending. User unenrolled from course",
                                                               $data);
             die;
         }
 
-        // If currency is incorrectly set then someone maybe trying to cheat the system
+        // If currency is incorrectly set then someone maybe trying to cheat the system.
 
-        if ($data->mc_currency != $plugin_instance->currency) {
-            \enrol_payu\util::message_paypal_error_to_admin(
+        if ($data->mc_currency != $plugininstance->currency) {
+            \enrol_payu\util::message_payu_error_to_admin(
                 "Currency does not match course settings, received: ".$data->mc_currency,
                 $data);
             die;
@@ -156,7 +148,7 @@ if (strlen($result) > 0) {
             $eventdata->courseid          = empty($data->courseid) ? SITEID : $data->courseid;
             $eventdata->modulename        = 'moodle';
             $eventdata->component         = 'enrol_payu';
-            $eventdata->name              = 'paypal_enrolment';
+            $eventdata->name              = 'payu_enrolment';
             $eventdata->userfrom          = get_admin();
             $eventdata->userto            = $user;
             $eventdata->subject           = "Moodle: payu payment";
@@ -166,59 +158,57 @@ if (strlen($result) > 0) {
             $eventdata->smallmessage      = '';
             message_send($eventdata);
 
-            \enrol_payu\util::message_paypal_error_to_admin("Payment pending", $data);
+            \enrol_payu\util::message_payu_error_to_admin("Payment pending", $data);
             die;
         }
 
-        // If our status is not completed or not pending on an echeck clearance then ignore and die
-        // This check is redundant at present but may be useful if payu extend the return codes in the future
+        // If our status is not completed or not pending on an echeck clearance then ignore and die,
+        // This check is redundant at present but may be useful if payu extend the return codes in the future.
 
         if (! ( $data->payment_status == "Completed" or
                ($data->payment_status == "Pending" and $data->pending_reason == "echeck") ) ) {
             die;
         }
 
-        // At this point we only proceed with a status of completed or pending with a reason of echeck
-
-
-
-        if ($existing = $DB->get_record("enrol_payu", array("txn_id"=>$data->txn_id))) {   // Make sure this transaction doesn't exist already
+        // At this point we only proceed with a status of completed or pending with a reason of echeck.
+        if ($existing = $DB->get_record("enrol_payu", array("txn_id" => $data->txn_id))) {   
+			// Make sure this transaction doesn't exist already
             \enrol_payu\util::message_payu_error_to_admin("Transaction $data->txn_id is being repeated!", $data);
             die;
 
         }
 
-        if (core_text::strtolower($data->business) !== core_text::strtolower($plugin->get_config('payubusiness'))) {   // Check that the email is the one we want it to be
-            \enrol_payu\util::message_paypal_error_to_admin("Business email is {$data->business} (not ".
+        if (core_text::strtolower($data->business) !== core_text::strtolower($plugin->get_config('payubusiness'))) {   
+			// Check that the email is the one we want it to be.
+            \enrol_payu\util::message_payu_error_to_admin("Business email is {$data->business} (not ".
                     $plugin->get_config('payubusiness').")", $data);
             die;
 
         }
 
-        if (!$user = $DB->get_record('user', array('id'=>$data->userid))) {   // Check that user exists
+        if (!$user = $DB->get_record('user', array('id' => $data->userid))) {   // Check that user exists
             \enrol_payu\util::message_payu_error_to_admin("User $data->userid doesn't exist", $data);
             die;
         }
 
-        if (!$course = $DB->get_record('course', array('id'=>$data->courseid))) { // Check that course exists
+        if (!$course = $DB->get_record('course', array('id' => $data->courseid))) { // Check that course exists
             \enrol_payu\util::message_payu_error_to_admin("Course $data->courseid doesn't exist", $data);
             die;
         }
 
         $coursecontext = context_course::instance($course->id, IGNORE_MISSING);
 
-        // Check that amount paid is the correct amount
-        if ( (float) $plugin_instance->cost <= 0 ) {
+        // Check that amount paid is the correct amount.
+        if ( (float) $plugininstance->cost <= 0 ) {
             $cost = (float) $plugin->get_config('cost');
         } else {
-            $cost = (float) $plugin_instance->cost;
+            $cost = (float) $plugininstance->cost;
         }
 
         // Use the same rounding of floats as on the enrol form.
         $cost = format_float($cost, 2, false);
-
         if ($data->payment_gross < $cost) {
-            \enrol_payu\util::message_paypal_error_to_admin("Amount paid is not enough ($data->payment_gross < $cost))", $data);
+            \enrol_payu\util::message_payu_error_to_admin("Amount paid is not enough ($data->payment_gross < $cost))", $data);
             die;
 
         }
@@ -229,18 +219,18 @@ if (strlen($result) > 0) {
 
         $DB->insert_record("enrol_payu", $data);
 
-        if ($plugin_instance->enrolperiod) {
+        if ($plugininstance->enrolperiod) {
             $timestart = time();
-            $timeend   = $timestart + $plugin_instance->enrolperiod;
+            $timeend   = $timestart + $plugininstance->enrolperiod;
         } else {
             $timestart = 0;
             $timeend   = 0;
         }
 
-        // Enrol user
-        $plugin->enrol_user($plugin_instance, $user->id, $plugin_instance->roleid, $timestart, $timeend);
+        // Enrol user.
+        $plugin->enrol_user($plugininstance, $user->id, $plugininstance->roleid, $timestart, $timeend);
 
-        // Pass $view=true to filter hidden caps if the user cannot see them
+        // Pass $view=true to filter hidden caps if the user cannot see them.
         if ($users = get_users_by_capability($context, 'moodle/course:update', 'u.*', 'u.id ASC',
                                              '', '', '', '', false, true)) {
             $users = sort_by_roleassignment_authority($users, $context);
@@ -284,7 +274,7 @@ if (strlen($result) > 0) {
             $eventdata->courseid          = $course->id;
             $eventdata->modulename        = 'moodle';
             $eventdata->component         = 'enrol_payu';
-            $eventdata->name              = 'paypal_enrolment';
+            $eventdata->name              = 'payu_enrolment';
             $eventdata->userfrom          = $user;
             $eventdata->userto            = $teacher;
             $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
@@ -304,7 +294,7 @@ if (strlen($result) > 0) {
                 $eventdata->courseid          = $course->id;
                 $eventdata->modulename        = 'moodle';
                 $eventdata->component         = 'enrol_payu';
-                $eventdata->name              = 'paypal_enrolment';
+                $eventdata->name              = 'payu_enrolment';
                 $eventdata->userfrom          = $user;
                 $eventdata->userto            = $admin;
                 $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
@@ -316,9 +306,9 @@ if (strlen($result) > 0) {
             }
         }
 
-    } else if (strcmp ($result, "INVALID") == 0) { // ERROR
+    } else if (strcmp ($result, "INVALID") == 0) { // ERROR!
         $DB->insert_record("enrol_payu", $data, false);
-        \enrol_payu\util::message_paypal_error_to_admin("Received an invalid payment notification!! (Fake payment?)", $data);
+        \enrol_payu\util::message_payu_error_to_admin("Received an invalid payment notification!! (Fake payment?)", $data);
     }
 }
 

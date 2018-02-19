@@ -18,8 +18,7 @@
  * Capabilities for payu enrolment plugin.
  *
  * @package    enrol_payu
- * @copyright  2010 Petr Skoda {@link http://skodak.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2018 Nilesh Pathade 
  */
 
 defined('MOODLE_INTERNAL') || die();

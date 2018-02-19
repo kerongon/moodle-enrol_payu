@@ -18,8 +18,7 @@
  * Defines message providers (types of message sent) for the payu enrolment plugin.
  *
  * @package    enrol_payu
- * @copyright  2012 Chris Follin
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2018 Nilesh Pathade
  */
 
 defined('MOODLE_INTERNAL') || die();

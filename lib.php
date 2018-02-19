@@ -20,23 +20,16 @@
  * This plugin allows you to set up paid courses.
  *
  * @package    enrol_payu
- * @copyright  2010 Eugene Venter
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2018 Nilesh Pathade
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * payu enrolment plugin implementation.
- * @author  Eugene Venter - based on code by Martin Dougiamas and others
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class enrol_payu_plugin extends enrol_plugin {
 
     public function get_currencies() {
-        // See https://www.payu.com/cgi-bin/webscr?cmd=p/sell/mc/mc_intro-outside,
-        // 3-character ISO-4217: https://cms.payu.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_api_currency_codes
-        $codes = array(
+		// This is Currencies which we can use in this plugin.
+		$codes = array(
             'AUD', 'BRL', 'CAD', 'CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'HUF', 'ILS','INR', 'JPY',
             'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'TWD', 'USD');
         $currencies = array();
@@ -49,12 +42,6 @@ class enrol_payu_plugin extends enrol_plugin {
 
     /**
      * Returns optional enrolment information icons.
-     *
-     * This is used in course list for quick overview of enrolment options.
-     *
-     * We are not using single instance parameter because sometimes
-     * we might want to prevent icon repetition when multiple instances
-     * of one type exist. One instance may also produce several icons.
      *
      * @param array $instances all enrol instances of this type in one course
      * @return array of pix_icon
@@ -78,17 +65,17 @@ class enrol_payu_plugin extends enrol_plugin {
     }
 
     public function roles_protected() {
-        // users with role assign cap may tweak the roles later
+        // Users with role assign cap may tweak the roles later.
         return false;
     }
 
     public function allow_unenrol(stdClass $instance) {
-        // users with unenrol cap may unenrol other users manually - requires enrol/payu:unenrol
+        // Users with unenrol cap may unenrol other users manually - requires enrol/payu:unenrol.
         return true;
     }
 
     public function allow_manage(stdClass $instance) {
-        // users with manage cap may tweak period and status - requires enrol/payu:manage
+        // Users with manage cap may tweak period and status - requires enrol/payu:manage.
         return true;
     }
 
@@ -108,7 +95,7 @@ class enrol_payu_plugin extends enrol_plugin {
             return false;
         }
 
-        // multiple instances supported - different cost for different roles
+        // Multiple instances supported - different cost for different roles.
         return true;
     }
 
@@ -154,12 +141,12 @@ class enrol_payu_plugin extends enrol_plugin {
      * @param stdClass $instance
      * @return string html text, usually a form in a text box
      */
-    function enrol_page_hook(stdClass $instance) {
+    public function enrol_page_hook(stdClass $instance) {
         global $CFG, $USER, $OUTPUT, $PAGE, $DB;
 
         ob_start();
 
-        if ($DB->record_exists('user_enrolments', array('userid'=>$USER->id, 'enrolid'=>$instance->id))) {
+        if ($DB->record_exists('user_enrolments', array('userid' => $USER->id, 'enrolid' => $instance->id))) {
             return ob_get_clean();
         }
 
@@ -171,14 +158,14 @@ class enrol_payu_plugin extends enrol_plugin {
             return ob_get_clean();
         }
 
-        $course = $DB->get_record('course', array('id'=>$instance->courseid));
+        $course = $DB->get_record('course', array('id' => $instance->courseid));
         $context = context_course::instance($course->id);
 
         $shortname = format_string($course->shortname, true, array('context' => $context));
         $strloginto = get_string("loginto", "", $shortname);
         $strcourses = get_string("courses");
 
-        // Pass $view=true to filter hidden caps if the user cannot see them
+        // Pass $view=true to filter hidden caps if the user cannot see them.
         if ($users = get_users_by_capability($context, 'moodle/course:update', 'u.*', 'u.id ASC',
                                              '', '', '', '', false, true)) {
             $users = sort_by_roleassignment_authority($users, $context);
@@ -192,11 +179,10 @@ class enrol_payu_plugin extends enrol_plugin {
         } else {
             $cost = (float) $instance->cost;
         }
-
 		$merchantkey = $this->get_config('merchantkey');
 		$merchantsalt = $this->get_config('merchantsalt');
-		
-        if (abs($cost) < 0.01) { // no cost, other enrolment methods (instances) should be used
+		if (abs($cost) < 0.01) {  
+			// No cost,other enrolment methods (instances) should be used.
             echo '<p>'.get_string('nocost', 'enrol_payu').'</p>';
         } else {
 
@@ -205,12 +191,11 @@ class enrol_payu_plugin extends enrol_plugin {
             $localisedcost = format_float($cost, 2, true);
             $cost = format_float($cost, 2, false);
 
-            if (isguestuser()) { // force login only for guest user, not real users with guest role
+            if (isguestuser()) { // force login only for guest user, not real users with guest role.
                 if (empty($CFG->loginhttps)) {
                     $wwwroot = $CFG->wwwroot;
                 } else {
-                    // This actually is not so secure ;-), 'cause we're
-                    // in unencrypted connection...
+                    // This actually is not so secure ;-), 'cause we're, in unencrypted connection.
                     $wwwroot = str_replace("http://", "https://", $CFG->wwwroot);
                 }
                 echo '<div class="mdl-align"><p>'.get_string('paymentrequired').'</p>';
@@ -218,8 +203,8 @@ class enrol_payu_plugin extends enrol_plugin {
                 echo '<p><a href="'.$wwwroot.'/login/">'.get_string('loginsite').'</a></p>';
                 echo '</div>';
             } else {
-                //Sanitise some fields before building the payu form
-                $coursefullname  = format_string($course->fullname, true, array('context'=>$context));
+                // Sanitise some fields before building the payu form.
+                $coursefullname  = format_string($course->fullname, true, array('context' => $context));
                 $courseshortname = $shortname;
                 $userfullname    = fullname($USER);
                 $userfirstname   = $USER->firstname;
@@ -230,10 +215,8 @@ class enrol_payu_plugin extends enrol_plugin {
 
                 include($CFG->dirroot.'/enrol/payu/enrol.html');
             }
-
-        }
-
-        return $OUTPUT->box(ob_get_clean());
+		}
+		return $OUTPUT->box(ob_get_clean());
     }
 
     /**
@@ -294,11 +277,13 @@ class enrol_payu_plugin extends enrol_plugin {
         $params['ue'] = $ue->id;
         if ($this->allow_unenrol($instance) && has_capability("enrol/payu:unenrol", $context)) {
             $url = new moodle_url('/enrol/unenroluser.php', $params);
-            $actions[] = new user_enrolment_action(new pix_icon('t/delete', ''), get_string('unenrol', 'enrol'), $url, array('class'=>'unenrollink', 'rel'=>$ue->id));
+            $actions[] = new user_enrolment_action(new pix_icon('t/delete', ''), 
+			get_string('unenrol', 'enrol'), $url, array('class'  => 'unenrollink', 'rel' => $ue->id));
         }
         if ($this->allow_manage($instance) && has_capability("enrol/payu:manage", $context)) {
             $url = new moodle_url('/enrol/editenrolment.php', $params);
-            $actions[] = new user_enrolment_action(new pix_icon('t/edit', ''), get_string('edit'), $url, array('class'=>'editenrollink', 'rel'=>$ue->id));
+            $actions[] = new user_enrolment_action(new pix_icon('t/edit', ''),
+			get_string('edit'), $url, array('class' => 'editenrollink', 'rel' => $ue->id));
         }
         return $actions;
     }

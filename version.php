@@ -15,17 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * payu enrolment plugin version specification.
+ * Payu enrolment plugin version specification.
  *
  * @package    enrol_payu
- * @copyright  2010 Eugene Venter
- * @author     Eugene Venter
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2018 
+ * @author     Nilesh Pathade
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016120500;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2016112900;        // Requires this Moodle version
-$plugin->component = 'enrol_payu';    // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2018021900;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2018021900;        // Requires this Moodle version.
+$plugin->component = 'enrol_payu';    // Full name of the plugin (used for diagnostics).
 $plugin->cron      = 60;

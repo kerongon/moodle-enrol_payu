@@ -20,6 +20,7 @@
  * @package    enrol_payu
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     Nilesh Pathade ( Refer by Moodle Plugins)	
  */
 
 $string['assignrole'] = 'Assign role';
@@ -48,13 +49,13 @@ $string['expiredaction_help'] = 'Select action to carry out when user enrolment 
 $string['mailadmins'] = 'Notify admin';
 $string['mailstudents'] = 'Notify students';
 $string['mailteachers'] = 'Notify teachers';
-$string['messageprovider:paypal_enrolment'] = 'payu enrolment messages';
+$string['messageprovider:payu_enrolment'] = 'payu enrolment messages';
 $string['nocost'] = 'There is no cost associated with enrolling in this course!';
 $string['payu:config'] = 'Configure payu enrol instances';
 $string['payu:manage'] = 'Manage enrolled users';
 $string['payu:unenrol'] = 'Unenrol users from course';
 $string['payu:unenrolself'] = 'Unenrol self from the course';
-$string['paypalaccepted'] = 'payu payments accepted';
+$string['payuaccepted'] = 'payu payments accepted';
 $string['pluginname'] = 'payu';
 $string['pluginname_desc'] = 'The payu module allows you to set up paid courses.  If the cost for any course is zero, then students are not asked to pay for entry.  There is a site-wide cost that you set here as a default for the whole site and then a course setting that you can set for each course individually. The course cost overrides the site cost.';
 $string['sendpaymentbutton'] = 'Send payment via payu';

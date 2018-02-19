@@ -18,34 +18,22 @@
  * payu enrolments plugin settings and presets.
  *
  * @package    enrol_payu
- * @copyright  2010 Eugene Venter
- * @author     Eugene Venter - based on code by Petr Skoda and others
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2018  
+ * @author     Nilesh Pathade 
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
 
-    //--- settings ------------------------------------------------------------------------------------------
+    // --- settings ---
     $settings->add(new admin_setting_heading('enrol_payu_settings', '', get_string('pluginname_desc', 'enrol_payu')));
-
     $settings->add(new admin_setting_configtext('enrol_payu/payubusiness', get_string('businessemail', 'enrol_payu'), get_string('businessemail_desc', 'enrol_payu'), '', PARAM_EMAIL));
-
-	
 	$settings->add(new admin_setting_configtext('enrol_payu/merchantkey', get_string('merchantkey', 'enrol_payu'), get_string('merchantkey_desc', 'enrol_payu'), ''));
-
 	$settings->add(new admin_setting_configtext('enrol_payu/merchantsalt', get_string('merchantsalt', 'enrol_payu'), get_string('merchantsalt_desc', 'enrol_payu'), ''));
-
-	
     $settings->add(new admin_setting_configcheckbox('enrol_payu/mailstudents', get_string('mailstudents', 'enrol_payu'), '', 0));
-
     $settings->add(new admin_setting_configcheckbox('enrol_payu/mailteachers', get_string('mailteachers', 'enrol_payu'), '', 0));
-
     $settings->add(new admin_setting_configcheckbox('enrol_payu/mailadmins', get_string('mailadmins', 'enrol_payu'), '', 0));
-
-    // Note: let's reuse the ext sync constants and strings here, internally it is very similar,
-    //       it describes what should happen when users are not supposed to be enrolled any more.
     $options = array(
         ENROL_EXT_REMOVED_KEEP           => get_string('extremovedkeep', 'enrol'),
         ENROL_EXT_REMOVED_SUSPENDNOROLES => get_string('extremovedsuspendnoroles', 'enrol'),
@@ -53,7 +41,7 @@ if ($ADMIN->fulltree) {
     );
     $settings->add(new admin_setting_configselect('enrol_payu/expiredaction', get_string('expiredaction', 'enrol_payu'), get_string('expiredaction_help', 'enrol_payu'), ENROL_EXT_REMOVED_SUSPENDNOROLES, $options));
 
-    //--- enrol instance defaults ----------------------------------------------------------------------------
+    // --- enrol instance defaults ---
     $settings->add(new admin_setting_heading('enrol_paypal_defaults',
         get_string('enrolinstancedefaults', 'admin'), get_string('enrolinstancedefaults_desc', 'admin')));
 
