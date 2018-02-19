@@ -20,7 +20,7 @@
  * @package    enrol_payu
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author     Nilesh Pathade ( Refer by Moodle Plugins)	
+ * @author     Nilesh Pathade ( Refer by Moodle Plugins)
  */
 
 $string['assignrole'] = 'Assign role';

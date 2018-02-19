@@ -65,7 +65,7 @@ if (empty($options['verbose'])) {
     $trace = new text_progress_trace();
 }
 
-// @var $plugin enrol_payu_plugin
+// Here @var $plugin enrol_payu_plugin.
 $plugin = enrol_get_plugin('payu');
 
 $result = $plugin->sync($trace);

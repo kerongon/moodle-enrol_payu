@@ -19,6 +19,7 @@
  *
  * @package    enrol_payu
  * @copyright  2018 Nilesh Pathade
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -90,10 +91,10 @@ class enrol_payu_testcase extends advanced_testcase {
 
         $data = array('roleid' => $studentrole->id, 'courseid' => $course1->id);
         $id = $payuplugin->add_instance($course1, $data);
-        $instance1  = $DB->get_record('enrol', array('id'=>$id));
+        $instance1  = $DB->get_record('enrol', array('id' => $id));
         $data = array('roleid' => $studentrole->id, 'courseid' => $course2->id);
         $id = $payuplugin->add_instance($course2, $data);
-        $instance2 = $DB->get_record('enrol', array('id'=>$id));
+        $instance2 = $DB->get_record('enrol', array('id' => $id));
         $data = array('roleid' => $teacherrole->id, 'courseid' => $course2->id);
         $id = $payuplugin->add_instance($course2, $data);
         $instance3 = $DB->get_record('enrol', array('id' => $id));
@@ -108,13 +109,13 @@ class enrol_payu_testcase extends advanced_testcase {
 
         $payuplugin->enrol_user($instance1, $user1->id, $studentrole->id);
         $payuplugin->enrol_user($instance1, $user2->id, $studentrole->id);
-        $payuplugin->enrol_user($instance1, $user3->id, $studentrole->id, 0, $now-60);
+        $payuplugin->enrol_user($instance1, $user3->id, $studentrole->id, 0, $now - 60);
 
         $payuplugin->enrol_user($instance2, $user1->id, $studentrole->id, 0, 0);
-        $payuplugin->enrol_user($instance2, $user2->id, $studentrole->id, 0, $now-60*60);
-        $payuplugin->enrol_user($instance2, $user3->id, $studentrole->id, 0, $now+60*60);
+        $payuplugin->enrol_user($instance2, $user2->id, $studentrole->id, 0, $now - 60 * 60);
+        $payuplugin->enrol_user($instance2, $user3->id, $studentrole->id, 0, $now + 60 * 60);
 
-        $payuplugin->enrol_user($instance3, $user1->id, $teacherrole->id, $now-60*60*24*7, $now-60);
+        $payuplugin->enrol_user($instance3, $user1->id, $teacherrole->id, $now - 60 * 60 * 24 * 7, $now - 60);
         $payuplugin->enrol_user($instance3, $user4->id, $teacherrole->id);
 
         role_assign($managerrole->id, $user3->id, $context1->id);
