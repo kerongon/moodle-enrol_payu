@@ -29,18 +29,25 @@ if ($ADMIN->fulltree) {
 
     // Sttings.
     $settings->add(new admin_setting_heading('enrol_payu_settings', '', get_string('pluginname_desc', 'enrol_payu')));
-    $settings->add(new admin_setting_configtext('enrol_payu/payubusiness', get_string('businessemail', 'enrol_payu'), get_string('businessemail_desc', 'enrol_payu'), '', PARAM_EMAIL));
-    $settings->add(new admin_setting_configtext('enrol_payu/merchantkey', get_string('merchantkey', 'enrol_payu'), get_string('merchantkey_desc', 'enrol_payu'), ''));
-    $settings->add(new admin_setting_configtext('enrol_payu/merchantsalt', get_string('merchantsalt', 'enrol_payu'), get_string('merchantsalt_desc', 'enrol_payu'), ''));
-    $settings->add(new admin_setting_configcheckbox('enrol_payu/mailstudents', get_string('mailstudents', 'enrol_payu'), '', 0));
-    $settings->add(new admin_setting_configcheckbox('enrol_payu/mailteachers', get_string('mailteachers', 'enrol_payu'), '', 0));
+    $settings->add(new admin_setting_configtext('enrol_payu/payubusiness', get_string('businessemail',
+        'enrol_payu'), get_string('businessemail_desc', 'enrol_payu'), '', PARAM_EMAIL));
+    $settings->add(new admin_setting_configtext('enrol_payu/merchantkey', get_string('merchantkey',
+        'enrol_payu'), get_string('merchantkey_desc', 'enrol_payu'), ''));
+    $settings->add(new admin_setting_configtext('enrol_payu/merchantsalt', get_string('merchantsalt',
+        'enrol_payu'), get_string('merchantsalt_desc', 'enrol_payu'), ''));
+    $settings->add(new admin_setting_configcheckbox('enrol_payu/mailstudents', get_string('mailstudents',
+    'enrol_payu'), '', 0));
+    $settings->add(new admin_setting_configcheckbox('enrol_payu/mailteachers', get_string('mailteachers',
+    'enrol_payu'), '', 0));
     $settings->add(new admin_setting_configcheckbox('enrol_payu/mailadmins', get_string('mailadmins', 'enrol_payu'), '', 0));
     $options = array(
         ENROL_EXT_REMOVED_KEEP           => get_string('extremovedkeep', 'enrol'),
         ENROL_EXT_REMOVED_SUSPENDNOROLES => get_string('extremovedsuspendnoroles', 'enrol'),
         ENROL_EXT_REMOVED_UNENROL        => get_string('extremovedunenrol', 'enrol'),
     );
-    $settings->add(new admin_setting_configselect('enrol_payu/expiredaction', get_string('expiredaction', 'enrol_payu'), get_string('expiredaction_help', 'enrol_payu'), ENROL_EXT_REMOVED_SUSPENDNOROLES, $options));
+    $settings->add(new admin_setting_configselect('enrol_payu/expiredaction', get_string('expiredaction',
+    'enrol_payu'), get_string('expiredaction_help', 'enrol_payu'), ENROL_EXT_REMOVED_SUSPENDNOROLES,
+    $options));
 
     // Enrol instance defaults.
     $settings->add(new admin_setting_heading('enrol_paypal_defaults',
@@ -54,7 +61,8 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('enrol_payu/cost', get_string('cost', 'enrol_payu'), '', 0, PARAM_FLOAT, 4));
 
     $paypalcurrencies = enrol_get_plugin('payu')->get_currencies();
-    $settings->add(new admin_setting_configselect('enrol_payu/currency', get_string('currency', 'enrol_payu'), '', 'USD', $paypalcurrencies));
+    $settings->add(new admin_setting_configselect('enrol_payu/currency', get_string('currency',
+        'enrol_payu'), '', 'USD', $paypalcurrencies));
 
     if (!during_initial_install()) {
         $options = get_default_enrol_roles(context_system::instance());

@@ -25,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018021900;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2018021900;        // Requires this Moodle version.
+$plugin->version   = 2017111300;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2017111300;        // Requires this Moodle version.
 $plugin->component = 'enrol_payu';    // Full name of the plugin (used for diagnostics).
 $plugin->cron      = 60;
 $plugin->maturity = MATURITY_STABLE; // This is considered as ready for production sites.

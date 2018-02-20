@@ -33,6 +33,8 @@ require_once($CFG->libdir.'/eventslib.php');
 require_once($CFG->libdir.'/enrollib.php');
 require_once($CFG->libdir . '/filelib.php');
 
+require_login();
+
 // Payu does not like when we return error messages here,
 // The custom handler just logs exceptions and stops.
 set_exception_handler(\enrol_payu\util::get_exception_handler());
@@ -120,11 +122,8 @@ if (!$result) {  // Could not connect to payu - FAIL.
 
 if (strlen($result) > 0) {
     if (strcmp($result, "VERIFIED") == 0) {          // VALID PAYMENT!
-
-
-// Check the payment_status and payment_reason.
-// If status is not completed or pending then unenrol the student if already enrolled and notify admin.
-
+        // Check the payment_status and payment_reason.
+        // If status is not completed or pending then unenrol the student if already enrolled and notify admin.
         if ($data->payment_status != "Completed" and $data->payment_status != "Pending") {
             $plugin->unenrol_user($plugininstance, $data->userid);
             \enrol_payu\util::message_payu_error_to_admin("Status not completed or pending. User unenrolled from course",
@@ -173,14 +172,13 @@ if (strlen($result) > 0) {
 
         // At this point we only proceed with a status of completed or pending with a reason of echeck.
         if ($existing = $DB->get_record("enrol_payu", array("txn_id" => $data->txn_id))) {
-        // Make sure this transaction doesn't exist already
             \enrol_payu\util::message_payu_error_to_admin("Transaction $data->txn_id is being repeated!", $data);
             die;
 
         }
 
-        if (core_text::strtolower($data->business) !== core_text::strtolower($plugin->get_config('payubusiness'))) {   
-        // Check that the email is the one we want it to be.
+        if (core_text::strtolower($data->business) !== core_text::strtolower($plugin->get_config('payubusiness'))) {
+            // Check that the email is the one we want it to be.
             \enrol_payu\util::message_payu_error_to_admin("Business email is {$data->business} (not ".
                     $plugin->get_config('payubusiness').")", $data);
             die;
@@ -188,13 +186,13 @@ if (strlen($result) > 0) {
         }
 
         if (!$user = $DB->get_record('user', array('id' => $data->userid))) {
-        // Check that user exists
+            // Check that user exists.
             \enrol_payu\util::message_payu_error_to_admin("User $data->userid doesn't exist", $data);
             die;
         }
 
         if (!$course = $DB->get_record('course', array('id' => $data->courseid))) {
-        // Check that course exists
+            // Check that course exists.
             \enrol_payu\util::message_payu_error_to_admin("Course $data->courseid doesn't exist", $data);
             die;
         }

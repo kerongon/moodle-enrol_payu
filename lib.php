@@ -29,9 +29,11 @@ defined('MOODLE_INTERNAL') || die();
 class enrol_payu_plugin extends enrol_plugin {
 
     public function get_currencies() {
-    // This is Currencies which we can use in this plugin.
-        $codes = array(
-            'AUD', 'BRL', 'CAD', 'CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'HUF', 'ILS','INR', 'JPY', 'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'TWD', 'USD');
+        // This is Currencies which we can use in this plugin.
+        $codes = array('AUD', 'BRL', 'CAD', 'CHF', 'CZK', 'DKK', 'EUR',
+            'GBP', 'HKD', 'HUF', 'ILS', 'INR', 'JPY', 'MXN', 'MYR', 'NOK',
+            'NZD', 'PHP', 'PLN', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'TWD',
+             'USD');
         $currencies = array();
         foreach ($codes as $c) {
             $currencies[$c] = new lang_string($c, 'core_currencies');
@@ -181,16 +183,16 @@ class enrol_payu_plugin extends enrol_plugin {
         }
         $merchantkey = $this->get_config('merchantkey');
         $merchantsalt = $this->get_config('merchantsalt');
-		if (abs($cost) < 0.01) {  
-        // No cost,other enrolment methods (instances) should be used.
-            echo '<p>'.get_string('nocost', 'enrol_payu').'</p>';
+        if (abs($cost) < 0.01) {
+               // No cost,other enrolment methods (instances) should be used.
+               echo '<p>'.get_string('nocost', 'enrol_payu').'</p>';
         } else {
             // Calculate localised and "." cost, make sure we send payu the same value,
             // Please note payu expects amount with 2 decimal places and "." separator.
             $localisedcost = format_float($cost, 2, true);
             $cost = format_float($cost, 2, false);
 
-            if (isguestuser()) { // force login only for guest user, not real users with guest role.
+            if (isguestuser()) { // Force login only for guest user, not real users with guest role.
                 if (empty($CFG->loginhttps)) {
                     $wwwroot = $CFG->wwwroot;
                 } else {
@@ -213,7 +215,7 @@ class enrol_payu_plugin extends enrol_plugin {
                 $instancename    = $this->get_instance_name($instance);
                 include($CFG->dirroot.'/enrol/payu/enrol.html');
             }
-		}
+        }
         return $OUTPUT->box(ob_get_clean());
     }
 
@@ -276,12 +278,12 @@ class enrol_payu_plugin extends enrol_plugin {
         if ($this->allow_unenrol($instance) && has_capability("enrol/payu:unenrol", $context)) {
             $url = new moodle_url('/enrol/unenroluser.php', $params);
             $actions[] = new user_enrolment_action(new pix_icon('t/delete', ''),
-			get_string('unenrol', 'enrol'), $url, array('class'  => 'unenrollink', 'rel' => $ue->id));
+            get_string('unenrol', 'enrol'), $url, array('class'  => 'unenrollink', 'rel' => $ue->id));
         }
         if ($this->allow_manage($instance) && has_capability("enrol/payu:manage", $context)) {
             $url = new moodle_url('/enrol/editenrolment.php', $params);
             $actions[] = new user_enrolment_action(new pix_icon('t/edit', ''),
-			get_string('edit'), $url, array('class' => 'editenrollink', 'rel' => $ue->id));
+            get_string('edit'), $url, array('class' => 'editenrollink', 'rel' => $ue->id));
         }
         return $actions;
     }
