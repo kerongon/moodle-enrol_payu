@@ -54,6 +54,12 @@ $req = 'cmd=_notify-validate';
 $data = new stdClass();
 
 foreach ($_POST as $key => $value) {
+    if ($key !== clean_param($key, PARAM_ALPHANUMEXT)) {
+        print_error("Sorry, Invalid request");
+    }
+    if (is_array($value)) {
+        print_error("Sorry, Unexpected array param");
+    }
     $req .= "&$key=".urlencode($value);
     $data->$key = fix_utf8($value);
 }
