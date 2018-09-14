@@ -46,7 +46,7 @@ if (!empty($SESSION->wantsurl)) {
 $fullname = format_string($course->fullname, true, array('context' => $context));
 
 if (is_enrolled($context, null, '', true)) { // TODO: use real payu check.
-    redirect($destination, get_string('paymentthanks', '', $fullname));
+    redirect($destination, get_string('paymentthanks', 'enrol_payu', $fullname));
 
 } else {   // Somehow they aren't enrolled yet!  :-( .
     $PAGE->set_url($destination);
@@ -54,7 +54,7 @@ if (is_enrolled($context, null, '', true)) { // TODO: use real payu check.
     $a = new stdClass();
     $a->teacher = get_string('defaultcourseteacher');
     $a->fullname = $fullname;
-    notice(get_string('paymentsorry', '', $a), $destination);
+    notice(get_string('paymentsorry', 'enrol_payu', $a), $destination);
 }
 
 

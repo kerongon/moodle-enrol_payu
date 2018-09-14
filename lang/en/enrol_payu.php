@@ -62,3 +62,5 @@ $string['sendpaymentbutton'] = 'Send payment via payu';
 $string['status'] = 'Allow payu enrolments';
 $string['status_desc'] = 'Allow users to use payu to enrol into a course by default.';
 $string['unenrolselfconfirm'] = 'Do you really want to unenrol yourself from course "{$a}"?';
+$string['paymentthanks'] = 'Thank you for the payment';
+$string['paymentsorry'] = 'Somehow they aren\'t enrolled yet!';

@@ -50,7 +50,7 @@ if ($ADMIN->fulltree) {
     $options));
 
     // Enrol instance defaults.
-    $settings->add(new admin_setting_heading('enrol_paypal_defaults',
+    $settings->add(new admin_setting_heading('enrol_payu_defaults',
         get_string('enrolinstancedefaults', 'admin'), get_string('enrolinstancedefaults_desc', 'admin')));
 
     $options = array(ENROL_INSTANCE_ENABLED  => get_string('yes'),
@@ -60,9 +60,9 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configtext('enrol_payu/cost', get_string('cost', 'enrol_payu'), '', 0, PARAM_FLOAT, 4));
 
-    $paypalcurrencies = enrol_get_plugin('payu')->get_currencies();
+    $payucurrencies = enrol_get_plugin('payu')->get_currencies();
     $settings->add(new admin_setting_configselect('enrol_payu/currency', get_string('currency',
-        'enrol_payu'), '', 'USD', $paypalcurrencies));
+        'enrol_payu'), '', 'USD', $payucurrencies));
 
     if (!during_initial_install()) {
         $options = get_default_enrol_roles(context_system::instance());
