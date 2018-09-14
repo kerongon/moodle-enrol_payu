@@ -339,7 +339,7 @@ class enrol_payu_plugin extends enrol_plugin {
         $mform->setDefault('status', $this->get_config('status'));
 
         $mform->addElement('text', 'cost', get_string('cost', 'enrol_payu'), array('size' => 4));
-        $mform->setType('cost', PARAM_RAW);
+        $mform->setType('cost', PARAM_INT);
         $mform->setDefault('cost', format_float($this->get_config('cost'), 2, true));
 
         $paypalcurrencies = $this->get_currencies();
